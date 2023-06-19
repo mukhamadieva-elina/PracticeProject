@@ -3,6 +3,7 @@
 @using System.Net.Http.Json;
 @using PracticeProject.MudblazorExamples.Data;
 @using MudBlazor.Components
+@using PracticeProject.Pages.MyComponents
 @inject HttpClient httpClient
 
 <style>
@@ -19,23 +20,14 @@
     <Columns>
         @foreach (var c in _columns)
         {
-            <PropertyColumn Property="x => x.GetType().GetProperty(c.Name).GetValue(x)" Sortable="false" CellClass="my-width" @ref="@refCol">
+            <PropertyColumn Property="x => x.GetType().GetProperty(c.Name).GetValue(x)" Sortable="false" CellClass="my-width">
                 <HeaderTemplate>
                     <MudText><b>@c.Name</b></MudText>
-                    <MudSpacer />
-                    <MudMenu Icon="@Icons.Material.TwoTone.ArrowDropDown" Variant="Variant.Outlined" Style="margin-right: 0;" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Size="Size.Small">
-                        <MudPaper Outlined="true" Square="true" Class="d-flex justify-center; my-width" Style="padding: 16px;">
-                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="OnOkButtonClicked">OK</MudButton>
-                            <MudSpacer />
-                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="OnCancelButtonClicked">Отменить</MudButton>
-                        </MudPaper>
-                    </MudMenu>
+                    <MyMenu/>
                 </HeaderTemplate>
             </PropertyColumn>
         }
     </Columns>
-
-
 </MudDataGrid>
 
 @code {
@@ -58,24 +50,6 @@
         public string Name { get; set; }
         public string Caption { get; set; }
         public bool DE { get; set; } = true;
-    }
-
-    private void OnOkButtonClicked()
-    {
-
-    }
-
-    private void OnCancelButtonClicked()
-    {
-
-    }
-
-    PropertyColumn<Element, object> refCol;
-
-
-    private string GetColumnWidth(PropertyColumn<Element, object> column)
-    {
-        return null;
     }
 
 }
