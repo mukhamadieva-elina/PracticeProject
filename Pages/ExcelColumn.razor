@@ -1,0 +1,92 @@
+﻿@page "/excelcolumn"
+
+@using System.Net.Http.Json;
+@using PracticeProject.MudblazorExamples.Data;
+@using MudBlazor.Components
+@inject HttpClient httpClient
+
+<style>
+    .my-grid .mud-table-cell {
+        padding: 1px 0px 1px 10px;
+    }
+
+    .my-width {
+        width: 200px;
+    }
+</style>
+
+<MudDataGrid T="Element" Items="@_elements" Class="my-grid" Bordered="true" Filterable="false" Style="width:1000px">
+    <Columns>
+        @foreach (var c in _columns)
+        {
+            <PropertyColumn Property="x => x.GetType().GetProperty(c.Name).GetValue(x)" Sortable="false" CellClass="my-width" @ref="@refCol">
+                <HeaderTemplate>
+                    <MudText><b>@c.Name</b></MudText>
+                    <MudSpacer />
+                    <MudMenu Icon="@Icons.Material.TwoTone.ArrowDropDown" Variant="Variant.Outlined" Style="margin-right: 0;" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Size="Size.Small">
+                        <MudPaper Outlined="true" Square="true" Class="d-flex justify-center; my-width" Style="padding: 16px;">
+                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="OnOkButtonClicked">OK</MudButton>
+                            <MudSpacer />
+                            <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="OnCancelButtonClicked">Отменить</MudButton>
+                        </MudPaper>
+                    </MudMenu>
+                </HeaderTemplate>
+            </PropertyColumn>
+        }
+    </Columns>
+
+
+</MudDataGrid>
+
+@code {
+
+    private IEnumerable<Element> _elements = new List<Element>();
+    List<ColumnDef> _columns = new List<ColumnDef>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _elements = await httpClient.GetFromJsonAsync<List<Element>>("https://try.mudblazor.com/webapi/periodictable");
+        _columns.Add(new ColumnDef() { Name = "Number", Caption = "N" });
+        _columns.Add(new ColumnDef() { Name = "Sign", Caption = "S" });
+        _columns.Add(new ColumnDef() { Name = "Name", Caption = "Name" });
+        _columns.Add(new ColumnDef() { Name = "Molar", Caption = "M" });
+        _columns.Add(new ColumnDef() { Name = "Group", Caption = "G" });
+    }
+
+    protected class ColumnDef
+    {
+        public string Name { get; set; }
+        public string Caption { get; set; }
+        public bool DE { get; set; } = true;
+    }
+
+    private void OnOkButtonClicked()
+    {
+
+    }
+
+    private void OnCancelButtonClicked()
+    {
+
+    }
+
+    PropertyColumn<Element, object> refCol;
+
+
+    private string GetColumnWidth(PropertyColumn<Element, object> column)
+    {
+        return null;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
