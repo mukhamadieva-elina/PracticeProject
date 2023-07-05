@@ -1,0 +1,112 @@
+﻿@using System.Linq.Expressions
+
+@implements IFilterDefinition<T>
+@typeparam T
+
+<PropertyColumn Property="@Expression" Filterable="true">
+    <FilterTemplate>
+        <MudIconButton OnClick="@OpenFilter" Icon="@_icon" Size="@Size.Small" />
+        <MudOverlay Visible="@_filterOpen" OnClick="@(() => _filterOpen = false)" />
+        <MudPopover Open="@_filterOpen" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter"
+                    Style="width:150px">
+            <MudStack Spacing="0">
+                <MudDatePicker Label="Start" Editable="true" @bind-Date="_startDate" Placeholder="Select Date" />
+                <MudDatePicker Label="End" Editable="true" @bind-Date="_endDate" Placeholder="Select Date" />
+                <MudStack Row="true">
+                    <MudButton OnClick="@(() => ClearFilterAsync(context))">Clear</MudButton>
+                    <MudButton Color="@Color.Primary" OnClick="@(() => ApplyFilterAsync(context))">Filter</MudButton>
+                </MudStack>
+            </MudStack>
+        </MudPopover>
+    </FilterTemplate>
+</PropertyColumn>
+
+@code {
+    [Parameter]
+    public Expression<Func<T, DateTime>> Expression { get; set; }
+
+    DateTime? _startDate;
+    DateTime? _endDate;
+
+    public Guid Id { get; set; }
+
+    public Column<T>? Column { get; set; }
+
+    public string? Title { get; set; }
+
+    public string? Operator { get; set; }
+
+    public object? Value { get; set; }
+
+    public Func<T, bool>? FilterFunction { get; set; }
+
+    MyFilterDefinition<T>? _filterDefinition;
+
+    public bool _filterOpen = false;
+
+    string _icon = Icons.Material.Outlined.FilterAlt;
+
+    Func<T, bool> IFilterDefinition<T>.GenerateFilterFunction(FilterOptions? filterOptions)
+    {
+        return FilterFunction;
+    }
+
+    public MyFilterDefinition<T> Clone()
+    {
+        return new MyFilterDefinition<T>
+            {
+                FilterFunction = FilterFunction,
+            };
+    }
+
+    IFilterDefinition<T> IFilterDefinition<T>.Clone()
+    {
+        return Clone();
+    }
+
+
+    private void OpenFilter()
+    {
+        _filterOpen = !_filterOpen;
+    }
+    private async Task ClearFilterAsync(FilterContext<T> context)
+    {
+        await context.Actions.ClearFilterAsync(_filterDefinition);
+        _startDate = null;
+        _endDate = null;
+        _filterOpen = false;
+    }
+
+    private async Task ApplyFilterAsync(FilterContext<T> context)
+    {
+        await context.Actions.ApplyFilterAsync(_filterDefinition);
+        _filterOpen = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _filterDefinition = new MyFilterDefinition<T>()
+            {
+                FilterFunction = (T x) =>
+                {
+                    var dateValue = Expression.Compile()(x);
+                    if (_startDate.HasValue && _endDate.HasValue)
+                    {
+                        return dateValue >= _startDate.Value && dateValue <= _endDate.Value;
+                    }
+                    else if (_startDate.HasValue)
+                    {
+                        return dateValue >= _startDate.Value;
+                    }
+                    else if (_endDate.HasValue)
+                    {
+                        return dateValue <= _endDate.Value;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            };
+    }
+}

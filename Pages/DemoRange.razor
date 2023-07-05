@@ -1,0 +1,31 @@
+﻿@page "/demorange"
+@using System.Collections.ObjectModel
+@using System.Linq.Expressions
+@using PracticeProject.Pages.MyComponents
+
+
+<MudDataGrid Items="@_items" T="Model" Filterable="true" FilterMode="@DataGridFilterMode.ColumnFilterRow">
+    <Columns>
+        <PropertyColumn Property="x => x.Name" Filterable="false"/>
+        <MyFilterDefinition Expression="_expression" T="Model" />
+    </Columns>
+</MudDataGrid>
+
+@code {
+    Expression<Func<Model, DateTime>> _expression = x => x.HireDate;
+
+    public record Model(string Name, DateTime HireDate);
+
+    ObservableCollection<Model> _items = new ObservableCollection<Model>()
+    {
+        new Model("Sam", new DateTime(2005, 3, 5)),
+        new Model("Alicia", new DateTime(2010, 1, 17)),
+        new Model("Ira", new DateTime(2017, 6, 15)),
+        new Model("John", new DateTime(2021, 12, 23)),
+        new Model("Fred", new DateTime(2003, 7, 3)),
+        new Model("Tabitha", new DateTime(2015, 2, 12)),
+        new Model("Hunter", new DateTime(2017, 9, 20)),
+        new Model("Esme", new DateTime(2017, 8, 1))
+    };
+   
+}
