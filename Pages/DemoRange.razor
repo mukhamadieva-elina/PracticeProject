@@ -4,7 +4,7 @@
 @using PracticeProject.Pages.MyComponents
 
 
-<MudDataGrid Items="@_items" T="Model" Filterable="true" FilterMode="@DataGridFilterMode.ColumnFilterRow">
+<MudDataGrid Items="@_items" T="Model" Filterable="true" FilterMode="@DataGridFilterMode.ColumnFilterMenu">
     <Columns>
         <PropertyColumn Property="x => x.Name" Filterable="false"/>
         <MyFilterDefinition Expression="_expression" T="Model" />
@@ -27,5 +27,4 @@
         new Model("Hunter", new DateTime(2017, 9, 20)),
         new Model("Esme", new DateTime(2017, 8, 1))
     };
-   
 }

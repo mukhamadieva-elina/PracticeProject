@@ -5,16 +5,13 @@
 
 <PropertyColumn Property="@Expression" Filterable="true">
     <FilterTemplate>
-        <MudIconButton OnClick="@OpenFilter" Icon="@_icon" Size="@Size.Small" />
-        <MudOverlay Visible="@_filterOpen" OnClick="@(() => _filterOpen = false)" />
-        <MudPopover Open="@_filterOpen" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter"
-                    Style="width:150px">
-            <MudStack Spacing="0">
+        <MudPopover Open="true" Style="width:250px; padding: 16px;">
+            <MudStack Spacing="3">
                 <MudDatePicker Label="Start" Editable="true" @bind-Date="_startDate" Placeholder="Select Date" />
                 <MudDatePicker Label="End" Editable="true" @bind-Date="_endDate" Placeholder="Select Date" />
-                <MudStack Row="true">
-                    <MudButton OnClick="@(() => ClearFilterAsync(context))">Clear</MudButton>
-                    <MudButton Color="@Color.Primary" OnClick="@(() => ApplyFilterAsync(context))">Filter</MudButton>
+                <MudStack Row="true" Justify="Justify.Center">
+                    <MudButton OnClick="@(() => ClearFilterAsync(context))" Variant="Variant.Outlined">Clear</MudButton>
+                    <MudButton Color="@Color.Primary" OnClick="@(() => ApplyFilterAsync(context))" Variant="Variant.Outlined">Filter</MudButton>
                 </MudStack>
             </MudStack>
         </MudPopover>
@@ -42,8 +39,6 @@
 
     MyFilterDefinition<T>? _filterDefinition;
 
-    public bool _filterOpen = false;
-
     string _icon = Icons.Material.Outlined.FilterAlt;
 
     Func<T, bool> IFilterDefinition<T>.GenerateFilterFunction(FilterOptions? filterOptions)
@@ -65,22 +60,16 @@
     }
 
 
-    private void OpenFilter()
-    {
-        _filterOpen = !_filterOpen;
-    }
     private async Task ClearFilterAsync(FilterContext<T> context)
     {
         await context.Actions.ClearFilterAsync(_filterDefinition);
         _startDate = null;
         _endDate = null;
-        _filterOpen = false;
     }
 
     private async Task ApplyFilterAsync(FilterContext<T> context)
     {
         await context.Actions.ApplyFilterAsync(_filterDefinition);
-        _filterOpen = false;
     }
 
     protected override async Task OnInitializedAsync()
